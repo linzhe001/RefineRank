@@ -8,8 +8,10 @@ __pycache__/
 runs/
 
 # large frozen weights and trained runs (keep directory structure via README)
-checkpoints/vlm/uAI-NEXUS-MedVLM-1.0a-7B-RL/
+checkpoints/vlm/*
 checkpoints/grounding_dino/*.pth
+checkpoints/refinenet/*.pt
+checkpoints/refinenet/deployment_manifest.json
 checkpoints/refinenet/run_*/
 
 # LaTeX build artifacts

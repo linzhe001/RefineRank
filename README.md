@@ -38,11 +38,11 @@ RefineRank/
 │   ├── decode.py           # parameter-free decoder + MedVidBench formatting
 │   ├── cache.py            # CandidateStore / FeatureCache / SpatialGridCache
 │   └── ...                 # geometry, coordinates, repool, timeline, runners
-├── checkpoints/
-│   ├── vlm/uAI-NEXUS-MedVLM-1.0a-7B-RL/        # frozen MedVLM (16 GB)
+├── checkpoints/            # flat folders, core files directly inside
+│   ├── vlm/                            # frozen MedVLM, HF format (16 GB)
 │   ├── grounding_dino/groundingdino_swinb_cogcoor.pth  # frozen detector
-│   └── refinenet/run_iter132_submission/       # released RefineNet weights
-│       ├── checkpoints/proposal_adapter_full.pt
+│   └── refinenet/                      # released RefineNet weights
+│       ├── proposal_adapter_full.pt
 │       └── deployment_manifest.json
 ├── tests/                  # 152 core unit tests (pytest)
 └── paper/                  # camera-ready LaTeX source + figures
@@ -70,18 +70,19 @@ All weights live under `checkpoints/` (see
 |---|---|---|
 | MedVLM (uAI-NEXUS-MedVLM-1.0a-7B-RL) | frozen, feature extraction | `checkpoints/vlm/` |
 | GroundingDINO SwinB | frozen, box proposals | `checkpoints/grounding_dino/` |
-| RefineNet | trainable (1.25M) | `checkpoints/refinenet/run_*/` |
+| RefineNet | trainable (1.25M) | `checkpoints/refinenet/` |
 
-The released RefineNet run `run_iter132_submission/` is the exact checkpoint
+The released RefineNet weights (`proposal_adapter_full.pt`, the
+`run_iter132_submission` run) are the exact checkpoint
 behind the paper's MedVidBench submission. The full `checkpoints/` tree
 (frozen MedVLM, frozen GroundingDINO, trained RefineNet) is hosted at
 [huggingface.co/linzher/RefineRank](https://huggingface.co/linzher/RefineRank);
 download it into the repository root with
 `hf download linzher/RefineRank --local-dir .` (see
 [`checkpoints/README.md`](checkpoints/README.md) for the expected layout).
-`interface.py predict` discovers
-the latest `checkpoints/refinenet/run_*/` automatically; override with
-`--checkpoint <run dir or .pt>`.
+`interface.py predict` discovers the flat `checkpoints/refinenet/` weights
+automatically (new training runs under `checkpoints/refinenet/run_*/` are
+discovered too); override with `--checkpoint <dir or .pt>`.
 
 ## Data preparation
 
@@ -157,8 +158,8 @@ checkpoints/refinenet/run_<UTC>/
 ### 4. Inference
 
 ```bash
-python interface.py predict                 # auto-selects latest checkpoints/refinenet/run_*
-python interface.py predict --checkpoint checkpoints/refinenet/run_iter132_submission
+python interface.py predict                 # auto-discovers checkpoints/refinenet/
+python interface.py predict --checkpoint checkpoints/refinenet/proposal_adapter_full.pt
 ```
 
 Runs RefineNet over the public cache, exactly re-pools refined boxes on the

@@ -203,10 +203,20 @@ def _run_train(args: argparse.Namespace) -> int:
 
 
 def _resolve_checkpoint(checkpoint: Path | None) -> tuple[Path, Path]:
-    """Return (deployment_manifest, proposal_checkpoint) for a run dir or .pt."""
+    """Return (deployment_manifest, proposal_checkpoint).
+
+    Supports the flat release layout
+    (``checkpoints/refinenet/{deployment_manifest.json,proposal_adapter_full.pt}``)
+    as well as training-run dirs
+    (``checkpoints/refinenet/run_*/{deployment_manifest.json,checkpoints/proposal_adapter_full.pt}``).
+    """
 
     if checkpoint is None:
         root = REPO_ROOT / "checkpoints" / "refinenet"
+        flat_manifest = root / "deployment_manifest.json"
+        flat_weights = root / "proposal_adapter_full.pt"
+        if flat_manifest.is_file() and flat_weights.is_file():
+            return flat_manifest, flat_weights
         runs = sorted(
             (
                 path
@@ -217,16 +227,23 @@ def _resolve_checkpoint(checkpoint: Path | None) -> tuple[Path, Path]:
         ) if root.is_dir() else []
         if not runs:
             raise SystemExit(
-                "no trained RefineNet run found under checkpoints/refinenet/; "
+                "no trained RefineNet checkpoint found under checkpoints/refinenet/; "
                 "run `python interface.py train` first or pass --checkpoint"
             )
         checkpoint = runs[0]
     if checkpoint.is_dir():
         manifest = checkpoint / "deployment_manifest.json"
         weights = checkpoint / "checkpoints" / "proposal_adapter_full.pt"
+        if not weights.is_file():
+            weights = checkpoint / "proposal_adapter_full.pt"
     else:
         weights = checkpoint
-        manifest = checkpoint.parent.parent / "deployment_manifest.json"
+        sibling = checkpoint.parent / "deployment_manifest.json"
+        manifest = (
+            sibling
+            if sibling.is_file()
+            else checkpoint.parent.parent / "deployment_manifest.json"
+        )
     if not manifest.is_file() or not weights.is_file():
         raise SystemExit(
             f"cannot resolve deployment manifest / weights from {checkpoint}"

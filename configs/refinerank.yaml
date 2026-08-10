@@ -7,7 +7,7 @@
 
 model:
   # Frozen MedVLM (Qwen2.5-VL architecture), HF format, local files only.
-  medvlm_path: checkpoints/vlm/uAI-NEXUS-MedVLM-1.0a-7B-RL
+  medvlm_path: checkpoints/vlm
   # Frozen GroundingDINO SwinB detector weights.
   groundingdino_checkpoint: checkpoints/grounding_dino/groundingdino_swinb_cogcoor.pth
   # GroundingDINO source checkout + model config (dino-tubes step only).
