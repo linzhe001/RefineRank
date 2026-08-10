@@ -1,0 +1,21 @@
+# RefineRank release repo
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# runtime artifacts
+runs/
+
+# large frozen weights and trained runs (keep directory structure via README)
+checkpoints/vlm/uAI-NEXUS-MedVLM-1.0a-7B-RL/
+checkpoints/grounding_dino/*.pth
+checkpoints/refinenet/run_*/
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.brf
+paper/*.log
+paper/*.out

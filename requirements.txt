@@ -1,0 +1,9 @@
+# RefineRank core dependencies.
+# Lower bounds pinned to the versions verified in the development environment.
+torch>=2.10.0
+transformers>=4.57.3
+numpy>=1.26.4
+Pillow>=10.4.0
+PyYAML>=6.0.3
+torchvision>=0.25.0  # only needed by the GroundingDINO runner (dino-tubes)
+pytest>=7.4.4
