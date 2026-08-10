@@ -10,9 +10,12 @@ Official code release for the ECCV 2026 MedVidU Workshop paper.
 > highest-scoring original or refined box.
 
 - **Paper (camera-ready source)**: [`paper/main.tex`](paper/main.tex) — compile with `pdflatex main && bibtex main && pdflatex main && pdflatex main`.
-- **Pretrained RefineNet weights**: [huggingface.co/linzher/RefineRank](https://huggingface.co/linzher/RefineRank)
-  (`proposal_adapter_full.pt` + `deployment_manifest.json`, the exact
-  `run_iter132_submission` checkpoint behind the paper's MedVidBench submission).
+- **All checkpoints**: [huggingface.co/linzher/RefineRank](https://huggingface.co/linzher/RefineRank)
+  hosts the complete `checkpoints/` tree — the frozen MedVLM (~16 GB), the
+  frozen GroundingDINO SwinB weights (~895 MB), and the trained RefineNet
+  (`run_iter132_submission`, the exact checkpoint behind the paper's
+  MedVidBench submission). Download with
+  `hf download linzher/RefineRank --local-dir .`.
 - **Headline result**: 0.421 STG mIoU on the archived MedVidBench Community
   leaderboard snapshot (27 July 2026) — the best STG mIoU among the ten
   ranking metrics on that snapshot.
@@ -70,9 +73,11 @@ All weights live under `checkpoints/` (see
 | RefineNet | trainable (1.25M) | `checkpoints/refinenet/run_*/` |
 
 The released RefineNet run `run_iter132_submission/` is the exact checkpoint
-behind the paper's MedVidBench submission; download it from
-[huggingface.co/linzher/RefineRank](https://huggingface.co/linzher/RefineRank)
-and place it under `checkpoints/refinenet/run_iter132_submission/` (see
+behind the paper's MedVidBench submission. The full `checkpoints/` tree
+(frozen MedVLM, frozen GroundingDINO, trained RefineNet) is hosted at
+[huggingface.co/linzher/RefineRank](https://huggingface.co/linzher/RefineRank);
+download it into the repository root with
+`hf download linzher/RefineRank --local-dir .` (see
 [`checkpoints/README.md`](checkpoints/README.md) for the expected layout).
 `interface.py predict` discovers
 the latest `checkpoints/refinenet/run_*/` automatically; override with
