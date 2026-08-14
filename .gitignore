@@ -14,10 +14,5 @@ checkpoints/refinenet/*.pt
 checkpoints/refinenet/deployment_manifest.json
 checkpoints/refinenet/run_*/
 
-# LaTeX build artifacts
-paper/*.aux
-paper/*.bbl
-paper/*.blg
-paper/*.brf
-paper/*.log
-paper/*.out
+# paper sources kept local, not on GitHub
+paper/
