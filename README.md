@@ -192,16 +192,3 @@ dtype, visual layers), `data` (splits, tubes, shortlist policy),
 load-bearing — checkpoints deserialize them into `ProposalAdapterConfig` /
 `OOFConfig`.
 
-## Citation
-
-```bibtex
-@inproceedings{jiang2026refinerank,
-  title     = {RefineRank: Joint Box Refinement and Ranking for Surgical
-               Spatio-Temporal Grounding},
-  author    = {Jiang, Linzhe and Huang, Jiayuan and Zhang, Changhao and
-               Jiang, Chunyang and Mao, Zhehua and
-               Garcia-Peraza-Herrera, Luis C. and Hoque, Mobarak I.},
-  booktitle = {ECCV Workshops (MedVidU)},
-  year      = {2026}
-}
-```
