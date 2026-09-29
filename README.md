@@ -6,8 +6,8 @@ Official code release for the ECCV 2026 MedVidU Workshop paper.
 > architecture) and GroundingDINO — with a compact **1.25M-parameter**
 > trainable module, **RefineNet**. RefineNet uses MedVLM language and regional
 > features to predict coordinate corrections and box-quality scores for
-> GroundingDINO proposals; a **parameter-free decoder** then returns the
-> highest-scoring original or refined box.
+> GroundingDINO proposals; a fixed decoding rule with **no learned parameters**
+> then selects the final box from the original and refined candidates.
 
 - **Paper (camera-ready source)**: [`paper/main.tex`](paper/main.tex) — compile with `pdflatex main && bibtex main && pdflatex main && pdflatex main`.
 - **All checkpoints**: [huggingface.co/linzher/RefineRank](https://huggingface.co/linzher/RefineRank)
@@ -16,9 +16,9 @@ Official code release for the ECCV 2026 MedVidU Workshop paper.
   (`run_iter132_submission`, the exact checkpoint behind the paper's
   MedVidBench submission). Download with
   `hf download linzher/RefineRank --local-dir .`.
-- **Headline result**: 0.421 STG mIoU on the archived MedVidBench Community
-  leaderboard snapshot (27 July 2026) — the best STG mIoU among the ten
-  ranking metrics on that snapshot.
+- **Headline result**: 0.421 STG mIoU on the MedVidBench Official Rankings
+  (Verified) snapshot (15 August 2026) — the highest displayed STG score on
+  that snapshot, while the global multi-metric rank is 11.
 - **Controlled evaluation** (video-separated split, three datasets:
   CholecTrack20 / CoPESD / EgoSurgery): STG mIoU **0.2719 → 0.4534** over the
   MedVLM + GroundingDINO baseline; candidate oracle 0.6772 → 0.7302.
@@ -35,7 +35,7 @@ RefineRank/
 │   ├── candidates.py       # GT-free candidate pool + diversity-MMR shortlist (K=48)
 │   ├── proposal.py         # RefineNet: QueryConditionedProposalAdapter
 │   ├── proposal_training.py# full-fit training / checkpointed prediction
-│   ├── decode.py           # parameter-free decoder + MedVidBench formatting
+│   ├── decode.py           # fixed (non-learned) decoder + MedVidBench formatting
 │   ├── cache.py            # CandidateStore / FeatureCache / SpatialGridCache
 │   └── ...                 # geometry, coordinates, repool, timeline, runners
 ├── checkpoints/            # flat folders, core files directly inside
@@ -73,8 +73,8 @@ All weights live under `checkpoints/` (see
 | RefineNet | trainable (1.25M) | `checkpoints/refinenet/` |
 
 The released RefineNet weights (`proposal_adapter_full.pt`, the
-`run_iter132_submission` run) are the exact checkpoint
-behind the paper's MedVidBench submission. The full `checkpoints/` tree
+`run_iter132_submission` run) are the exact checkpoint behind the paper's
+MedVidBench submission. The full `checkpoints/` tree
 (frozen MedVLM, frozen GroundingDINO, trained RefineNet) is hosted at
 [huggingface.co/linzher/RefineRank](https://huggingface.co/linzher/RefineRank);
 download it into the repository root with
@@ -163,8 +163,8 @@ python interface.py predict --checkpoint checkpoints/refinenet/proposal_adapter_
 ```
 
 Runs RefineNet over the public cache, exactly re-pools refined boxes on the
-raw spatial grids, and applies the parameter-free decoder (top-1 argmax;
-CholecTrack20 uses a fixed shape-DP with λ=0.2 over the top-20). Writes the
+raw spatial grids, and applies the fixed decoder, which has no learned
+parameters, to select the final box at each requested time. Writes the
 MedVidBench STG prediction rows (780-row public contract enforced by default;
 disable with `--no-require-public-test`):
 
@@ -188,7 +188,6 @@ RefineNet forward/loss/shortlist, re-pooling, and the decoder.
 dtype, visual layers), `data` (splits, tubes, shortlist policy),
 `proposal_adapter` (RefineNet architecture and bounded-correction limits),
 `spatial_cache` (re-pooling tolerances), `train` (optimizer), and `decoder`
-(parameter-free selection). Field names in `proposal_adapter` and `train` are
-load-bearing — checkpoints deserialize them into `ProposalAdapterConfig` /
+(fixed, non-learned selection). Field names in `proposal_adapter` and `train`
+are load-bearing — checkpoints deserialize them into `ProposalAdapterConfig` /
 `OOFConfig`.
-
